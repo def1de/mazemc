@@ -1,0 +1,9 @@
+name: mazemc
+version: '1.0'
+main: com.def1de.mazemc.Mazemc
+api-version: '1.21'
+commands:
+  maze:
+    description: Main command for MazeMC
+    usage: /maze <new>
+    permission: mazemc.use

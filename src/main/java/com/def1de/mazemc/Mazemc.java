@@ -16,10 +16,12 @@ import java.io.File;
 
 public final class Mazemc extends JavaPlugin {
     private CommandHandler commandHandler;
+    private static Mazemc instance;
 
     @Override
     public void onEnable() {
         // Plugin startup logic
+        instance = this;
         getLogger().info("MazeMC enabled");
         commandHandler = new CommandHandler();
     }
@@ -39,6 +41,10 @@ public final class Mazemc extends JavaPlugin {
                 }
             }
         }
+    }
+
+    public static Mazemc getInstance() {
+        return instance;
     }
 
     private void deleteDirectory(File file) throws java.io.IOException {

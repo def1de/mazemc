@@ -2,11 +2,172 @@ package com.def1de.mazemc;
 
 import org.bukkit.*;
 import org.bukkit.block.Block;
+import org.bukkit.block.Chest;
+import org.bukkit.enchantments.Enchantment;
+import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+import java.util.*;
+
 public class CommandHandler {
+    private final List<LootEntry> innerLootTable = Arrays.asList(
+            new LootEntry(new ItemStack(Material.LEATHER_HELMET, 1), 0.2).addRandomEnchant(
+                    new EnchantmentWithLevel(Enchantment.BLAST_PROTECTION, 1, 2),
+                    new EnchantmentWithLevel(Enchantment.FIRE_PROTECTION, 1, 2),
+                    new EnchantmentWithLevel(Enchantment.PROJECTILE_PROTECTION, 1, 2),
+                    new EnchantmentWithLevel(Enchantment.PROTECTION, 1, 2),
+                    new EnchantmentWithLevel(Enchantment.THORNS, 1, 1),
+                    new EnchantmentWithLevel(Enchantment.BINDING_CURSE , 1, 1)
+            ),
+            new LootEntry(new ItemStack(Material.LEATHER_CHESTPLATE, 1), 0.2).addRandomEnchant(
+                    new EnchantmentWithLevel(Enchantment.BLAST_PROTECTION, 1, 2),
+                    new EnchantmentWithLevel(Enchantment.FIRE_PROTECTION, 1, 2),
+                    new EnchantmentWithLevel(Enchantment.PROJECTILE_PROTECTION, 1, 2),
+                    new EnchantmentWithLevel(Enchantment.PROTECTION, 1, 2),
+                    new EnchantmentWithLevel(Enchantment.THORNS, 1, 1),
+                    new EnchantmentWithLevel(Enchantment.BINDING_CURSE , 1, 1)
+            ),
+            new LootEntry(new ItemStack(Material.LEATHER_LEGGINGS, 1), 0.2).addRandomEnchant(
+                    new EnchantmentWithLevel(Enchantment.BLAST_PROTECTION, 1, 2),
+                    new EnchantmentWithLevel(Enchantment.FIRE_PROTECTION, 1, 2),
+                    new EnchantmentWithLevel(Enchantment.PROJECTILE_PROTECTION, 1, 2),
+                    new EnchantmentWithLevel(Enchantment.PROTECTION, 1, 2),
+                    new EnchantmentWithLevel(Enchantment.THORNS, 1, 1),
+                    new EnchantmentWithLevel(Enchantment.BINDING_CURSE , 1, 1)
+            ),
+            new LootEntry(new ItemStack(Material.LEATHER_BOOTS, 1), 0.2).addRandomEnchant(
+                    new EnchantmentWithLevel(Enchantment.BLAST_PROTECTION, 1, 2),
+                    new EnchantmentWithLevel(Enchantment.FIRE_PROTECTION, 1, 2),
+                    new EnchantmentWithLevel(Enchantment.PROJECTILE_PROTECTION, 1, 2),
+                    new EnchantmentWithLevel(Enchantment.PROTECTION, 1, 2),
+                    new EnchantmentWithLevel(Enchantment.THORNS, 1, 1),
+                    new EnchantmentWithLevel(Enchantment.BINDING_CURSE , 1, 1)
+            ),
+            new LootEntry(new ItemStack(Material.CHAINMAIL_BOOTS, 1), 0.08).addRandomEnchant(
+                    new EnchantmentWithLevel(Enchantment.BLAST_PROTECTION, 1, 2),
+                    new EnchantmentWithLevel(Enchantment.FIRE_PROTECTION, 1, 2),
+                    new EnchantmentWithLevel(Enchantment.PROJECTILE_PROTECTION, 1, 2),
+                    new EnchantmentWithLevel(Enchantment.PROTECTION, 1, 2),
+                    new EnchantmentWithLevel(Enchantment.THORNS, 1, 1),
+                    new EnchantmentWithLevel(Enchantment.BINDING_CURSE , 1, 1)
+            ),
+            new LootEntry(new ItemStack(Material.CHAINMAIL_CHESTPLATE, 1), 0.08).addRandomEnchant(
+                    new EnchantmentWithLevel(Enchantment.BLAST_PROTECTION, 1, 2),
+                    new EnchantmentWithLevel(Enchantment.FIRE_PROTECTION, 1, 2),
+                    new EnchantmentWithLevel(Enchantment.PROJECTILE_PROTECTION, 1, 2),
+                    new EnchantmentWithLevel(Enchantment.PROTECTION, 1, 2),
+                    new EnchantmentWithLevel(Enchantment.THORNS, 1, 1),
+                    new EnchantmentWithLevel(Enchantment.BINDING_CURSE , 1, 1)
+            ),
+            new LootEntry(new ItemStack(Material.CHAINMAIL_LEGGINGS, 1), 0.08).addRandomEnchant(
+                    new EnchantmentWithLevel(Enchantment.BLAST_PROTECTION, 1, 2),
+                    new EnchantmentWithLevel(Enchantment.FIRE_PROTECTION, 1, 2),
+                    new EnchantmentWithLevel(Enchantment.PROJECTILE_PROTECTION, 1, 2),
+                    new EnchantmentWithLevel(Enchantment.PROTECTION, 1, 2),
+                    new EnchantmentWithLevel(Enchantment.THORNS, 1, 1),
+                    new EnchantmentWithLevel(Enchantment.BINDING_CURSE , 1, 1)
+            ),
+            new LootEntry(new ItemStack(Material.CHAINMAIL_BOOTS, 1), 0.08).addRandomEnchant(
+                    new EnchantmentWithLevel(Enchantment.BLAST_PROTECTION, 1, 2),
+                    new EnchantmentWithLevel(Enchantment.FIRE_PROTECTION, 1, 2),
+                    new EnchantmentWithLevel(Enchantment.PROJECTILE_PROTECTION, 1, 2),
+                    new EnchantmentWithLevel(Enchantment.PROTECTION, 1, 2),
+                    new EnchantmentWithLevel(Enchantment.THORNS, 1, 1),
+                    new EnchantmentWithLevel(Enchantment.BINDING_CURSE , 1, 1)
+            ),
+            new LootEntry(new ItemStack(Material.WOODEN_SWORD, 1), 0.35),
+            new LootEntry(new ItemStack(Material.POTATO, 2), 0.5),
+            new LootEntry(new ItemStack(Material.BREAD, 3), 0.5),
+            new LootEntry(new ItemStack(Material.CARROT, 3), 0.5),
+            new LootEntry(new ItemStack(Material.SALMON, 1), 0.5)
+    );
+
+    private final List<LootEntry> outerLootTable = Arrays.asList(
+            new LootEntry(new ItemStack(Material.IRON_HELMET, 1), 0.2).addRandomEnchant(
+                    new EnchantmentWithLevel(Enchantment.BLAST_PROTECTION, 1, 2),
+                    new EnchantmentWithLevel(Enchantment.FIRE_PROTECTION, 1, 2),
+                    new EnchantmentWithLevel(Enchantment.PROJECTILE_PROTECTION, 1, 2),
+                    new EnchantmentWithLevel(Enchantment.PROTECTION, 1, 2),
+                    new EnchantmentWithLevel(Enchantment.THORNS, 1, 1),
+                    new EnchantmentWithLevel(Enchantment.BINDING_CURSE , 1, 1)
+            ),
+            new LootEntry(new ItemStack(Material.IRON_CHESTPLATE, 1), 0.2).addRandomEnchant(
+                    new EnchantmentWithLevel(Enchantment.BLAST_PROTECTION, 1, 2),
+                    new EnchantmentWithLevel(Enchantment.FIRE_PROTECTION, 1, 2),
+                    new EnchantmentWithLevel(Enchantment.PROJECTILE_PROTECTION, 1, 2),
+                    new EnchantmentWithLevel(Enchantment.PROTECTION, 1, 2),
+                    new EnchantmentWithLevel(Enchantment.THORNS, 1, 1),
+                    new EnchantmentWithLevel(Enchantment.BINDING_CURSE , 1, 1)
+            ),
+            new LootEntry(new ItemStack(Material.IRON_LEGGINGS, 1), 0.2).addRandomEnchant(
+                    new EnchantmentWithLevel(Enchantment.BLAST_PROTECTION, 1, 2),
+                    new EnchantmentWithLevel(Enchantment.FIRE_PROTECTION, 1, 2),
+                    new EnchantmentWithLevel(Enchantment.PROJECTILE_PROTECTION, 1, 2),
+                    new EnchantmentWithLevel(Enchantment.PROTECTION, 1, 2),
+                    new EnchantmentWithLevel(Enchantment.THORNS, 1, 1),
+                    new EnchantmentWithLevel(Enchantment.BINDING_CURSE , 1, 1)
+            ),
+            new LootEntry(new ItemStack(Material.IRON_BOOTS, 1), 0.2).addRandomEnchant(
+                    new EnchantmentWithLevel(Enchantment.BLAST_PROTECTION, 1, 2),
+                    new EnchantmentWithLevel(Enchantment.FIRE_PROTECTION, 1, 2),
+                    new EnchantmentWithLevel(Enchantment.PROJECTILE_PROTECTION, 1, 2),
+                    new EnchantmentWithLevel(Enchantment.PROTECTION, 1, 2),
+                    new EnchantmentWithLevel(Enchantment.THORNS, 1, 1),
+                    new EnchantmentWithLevel(Enchantment.BINDING_CURSE , 1, 1)
+            ),
+            new LootEntry(new ItemStack(Material.DIAMOND_BOOTS, 1), 0.05).addRandomEnchant(
+                    new EnchantmentWithLevel(Enchantment.BLAST_PROTECTION, 1, 4),
+                    new EnchantmentWithLevel(Enchantment.FIRE_PROTECTION, 1, 4),
+                    new EnchantmentWithLevel(Enchantment.PROJECTILE_PROTECTION, 1, 4),
+                    new EnchantmentWithLevel(Enchantment.PROTECTION, 1, 4),
+                    new EnchantmentWithLevel(Enchantment.THORNS, 1, 3),
+                    new EnchantmentWithLevel(Enchantment.BINDING_CURSE , 1, 1)
+            ),
+            new LootEntry(new ItemStack(Material.DIAMOND_CHESTPLATE, 1), 0.05).addRandomEnchant(
+                    new EnchantmentWithLevel(Enchantment.BLAST_PROTECTION, 1, 4),
+                    new EnchantmentWithLevel(Enchantment.FIRE_PROTECTION, 1, 4),
+                    new EnchantmentWithLevel(Enchantment.PROJECTILE_PROTECTION, 1, 4),
+                    new EnchantmentWithLevel(Enchantment.PROTECTION, 1, 4),
+                    new EnchantmentWithLevel(Enchantment.THORNS, 1, 3),
+                    new EnchantmentWithLevel(Enchantment.BINDING_CURSE , 1, 1)
+            ),
+            new LootEntry(new ItemStack(Material.DIAMOND_LEGGINGS, 1), 0.05).addRandomEnchant(
+                    new EnchantmentWithLevel(Enchantment.BLAST_PROTECTION, 1, 4),
+                    new EnchantmentWithLevel(Enchantment.FIRE_PROTECTION, 1, 4),
+                    new EnchantmentWithLevel(Enchantment.PROJECTILE_PROTECTION, 1, 4),
+                    new EnchantmentWithLevel(Enchantment.PROTECTION, 1, 4),
+                    new EnchantmentWithLevel(Enchantment.THORNS, 1, 3),
+                    new EnchantmentWithLevel(Enchantment.BINDING_CURSE , 1, 1)
+            ),
+            new LootEntry(new ItemStack(Material.DIAMOND_BOOTS, 1), 0.05).addRandomEnchant(
+                    new EnchantmentWithLevel(Enchantment.BLAST_PROTECTION, 1, 4),
+                    new EnchantmentWithLevel(Enchantment.FIRE_PROTECTION, 1, 4),
+                    new EnchantmentWithLevel(Enchantment.PROJECTILE_PROTECTION, 1, 4),
+                    new EnchantmentWithLevel(Enchantment.PROTECTION, 1, 4),
+                    new EnchantmentWithLevel(Enchantment.THORNS, 1, 3),
+                    new EnchantmentWithLevel(Enchantment.BINDING_CURSE , 1, 1)
+            ),
+            new LootEntry(new ItemStack(Material.IRON_SWORD, 1), 0.15).addRandomEnchant(
+                    new EnchantmentWithLevel(Enchantment.SHARPNESS, 2, 5),
+                    new EnchantmentWithLevel(Enchantment.SMITE, 2, 5),
+                    new EnchantmentWithLevel(Enchantment.FIRE_ASPECT, 1, 2),
+                    new EnchantmentWithLevel(Enchantment.KNOCKBACK, 1, 2)
+            ),
+            new LootEntry(new ItemStack(Material.DIAMOND_SWORD, 1), 0.05).addRandomEnchant(
+                    new EnchantmentWithLevel(Enchantment.SHARPNESS, 2, 5),
+                    new EnchantmentWithLevel(Enchantment.SMITE, 2, 5),
+                    new EnchantmentWithLevel(Enchantment.FIRE_ASPECT, 1, 2),
+                    new EnchantmentWithLevel(Enchantment.KNOCKBACK, 1, 2)
+            ),
+            new LootEntry(new ItemStack(Material.GOLDEN_APPLE, 1), 0.07),
+            new LootEntry(new ItemStack(Material.BREAD, 15), 0.35),
+            new LootEntry(new ItemStack(Material.GOLDEN_CARROT, 8), 0.12),
+            new LootEntry(new ItemStack(Material.ENCHANTED_GOLDEN_APPLE, 1), 0.001)
+    );
+
     public boolean handleMazeNew(CommandSender sender, Command command, String label, String[] args) {
         String worldName = "world_" + System.currentTimeMillis();
         WorldCreator wc = new WorldCreator(worldName);
@@ -142,7 +303,45 @@ public class CommandHandler {
             }
         }
 
-        // Start area (circle radius 5 at 0,0)
+        double chestChance = 0.05; // 5% chance to spawn a chest at a corner
+        for (int x = 1; x < mazeWidth - 1; x++) {
+            for (int z = 1; z < mazeHeight - 1; z++) {
+                if (!maze[x][z]) continue; // Only consider path cells
+
+                // Check for corner: two adjacent path neighbors at a right angle
+                boolean bottom = maze[x][z - 1];
+                boolean top = maze[x][z + 1];
+                boolean right = maze[x + 1][z];
+                boolean left = maze[x - 1][z];
+
+                boolean isCorner = (bottom && right && !top && !left) ||
+                        (bottom && left && !top && !right) ||
+                        (top && right && !bottom && !left) ||
+                        (top && left && !bottom && !right);
+
+                if (isCorner && random.nextDouble() < chestChance) {
+                    // Place chest at the center of this path cell
+                    int wx = offsetX + x * 2;
+                    int wz = offsetZ + z * 2;
+                    int chestY = baseY + 1; // Place chest above the ground
+
+                    if (bottom && right) {
+                        wz += 1;
+                    } else if (bottom && left) {
+                        wx += 1;
+                        wz += 1;
+                    } else if (top && right) {
+                        // keep
+                    } else if (top && left) {
+                        wx += 1;
+                    }
+
+                    createChest(world, wx, chestY, wz);
+                }
+            }
+        }
+
+        // Start area (circle radius 8 at 0,0)
         int radius = 8;
         for (int dx = -radius; dx <= radius; dx++) {
             for (int dz = -radius; dz <= radius; dz++) {
@@ -157,12 +356,75 @@ public class CommandHandler {
                 }
             }
         }
+
+        // Crate a camp in the start area
+        world.getBlockAt(0, baseY + 1, 0).setType(Material.CAMPFIRE);
+
+        // Set wooden logs around the campfire as seating
+        int[][] logPositions = {
+                {-1, 3}, {0, 3}, {1, 3},      // North
+                {3, -1}, {3, 0}, {3, 1},      // East
+                {-3, -1}, {-3, 0}, {-3, 1},   // West
+                {-1, -3}, {0, -3}, {1, -3}    // South
+        };
+
+        for (int[] pos : logPositions) {
+            int x = pos[0];
+            int z = pos[1];
+            Block log = world.getBlockAt(x, baseY + 1, z);
+            log.setType(Material.OAK_LOG);
+            org.bukkit.block.data.Orientable orientable = (org.bukkit.block.data.Orientable) log.getBlockData();
+
+            // Determine axis: logs on N/S face Z, logs on E/W face X
+            if (x == 3 || x == -3) {
+                orientable.setAxis(org.bukkit.Axis.Z); // East-West logs
+            } else if (z == 3 || z == -3) {
+                orientable.setAxis(org.bukkit.Axis.X); // North-South logs
+            } else {
+                // Diagonal logs: choose axis based on which is further from center
+                orientable.setAxis(Math.abs(x) > Math.abs(z) ? org.bukkit.Axis.X : org.bukkit.Axis.Z);
+            }
+            log.setBlockData(orientable);
+        }
+
     }
 
 
+    private void createChest(World world, int x, int y, int z) {
+        Block block = world.getBlockAt(x, y, z);
+        double dist = Math.sqrt(x * x + z * z);
+        if (dist >= 50 && dist <= 60) {
+            return; // No chests in the ring gap
+        }
+        block.setType(Material.CHEST);
+        // Fill the chest with loot here
+        Bukkit.getScheduler().runTaskLater(Mazemc.getInstance(), () -> {
+            if (block.getState() instanceof Chest) {
+                Chest chest = (Chest) block.getState();
+                Inventory inv = chest.getBlockInventory();
 
+                List<LootEntry> lootTable = (dist < 50) ? innerLootTable : outerLootTable;
 
-
-
+                Set<Integer> usedSlots = new HashSet<>();
+                Random random = new Random();
+                for (LootEntry entry : lootTable) {
+                    if (random.nextDouble() < entry.spawnRate) {
+                        ItemStack loot = entry.item.clone();
+                        if (!entry.possibleEnchants.isEmpty()) {
+                            EnchantmentWithLevel chosen = entry.possibleEnchants.get(random.nextInt(entry.possibleEnchants.size()));
+                            int level = chosen.minLevel + random.nextInt(chosen.maxLevel - chosen.minLevel + 1);
+                            loot.addUnsafeEnchantment(chosen.enchantment, level);
+                        }
+                        int slot;
+                        do {
+                            slot = random.nextInt(inv.getSize());
+                        } while (usedSlots.contains(slot));
+                        inv.setItem(slot, loot);
+                        usedSlots.add(slot);
+                    }
+                }
+            }
+        }, 2L);
+    }
 
 }

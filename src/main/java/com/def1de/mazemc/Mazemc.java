@@ -1,29 +1,21 @@
 package com.def1de.mazemc;
 
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.Material;
-import org.bukkit.World;
-import org.bukkit.WorldCreator;
-import org.bukkit.WorldType;
-import org.bukkit.block.Block;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
 
 public final class Mazemc extends JavaPlugin {
-    private CommandHandler commandHandler;
     private static Mazemc instance;
+    private MazeManager mazeManager;
 
     @Override
     public void onEnable() {
         // Plugin startup logic
         instance = this;
         getLogger().info("MazeMC enabled");
-        commandHandler = new CommandHandler();
     }
 
     @Override
@@ -65,9 +57,13 @@ public final class Mazemc extends JavaPlugin {
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         if (command.getName().equalsIgnoreCase("maze")) {
             if (args.length == 1 && args[0].equalsIgnoreCase("new")) {
-                return commandHandler.handleMazeNew(sender, command, label, args);
+                mazeManager = new MazeManager(sender);
+                return true;
+            } else if(args.length == 1 && args[0].equalsIgnoreCase("start")) {
+                mazeManager.startGame();
+                return true;
             }
-            sender.sendMessage(ChatColor.YELLOW + "Usage: /maze new");
+            sender.sendMessage("§eUsage: /maze new");
             return true;
         }
         return false;

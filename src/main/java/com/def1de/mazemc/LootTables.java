@@ -1,10 +1,11 @@
 package com.def1de.mazemc;
 
-import java.util.List;
-
 import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.PotionMeta;
+import org.bukkit.potion.PotionType;
+
 import java.util.*;
 
 public class LootTables {
@@ -160,6 +161,8 @@ public class LootTables {
             new LootEntry(new ItemStack(Material.GOLDEN_APPLE, 1), 0.07),
             new LootEntry(new ItemStack(Material.BREAD, 15), 0.35),
             new LootEntry(new ItemStack(Material.GOLDEN_CARROT, 8), 0.12),
+            new LootEntry(createPotion(PotionType.INVISIBILITY), 0.5),
+            new LootEntry(createSplashPotion(PotionType.INVISIBILITY), 0.5),
             new LootEntry(new ItemStack(Material.ENCHANTED_GOLDEN_APPLE, 1), 0.001)
     );
 
@@ -170,4 +173,26 @@ public class LootTables {
      public static List<LootEntry> getOuterLootTable() {
          return outerLootTable;
      }
-}
+
+    /**
+     * Helper method to create a potion with specific type
+     */
+    private static ItemStack createPotion(PotionType potionType) {
+        ItemStack potion = new ItemStack(Material.POTION, 1);
+        PotionMeta meta = (PotionMeta) potion.getItemMeta();
+        meta.setBasePotionType(potionType);
+        potion.setItemMeta(meta);
+        return potion;
+    }
+
+    /**
+     * Helper method to create a splash potion with specific type
+     */
+        private static ItemStack createSplashPotion(PotionType potionType) {
+            ItemStack potion = new ItemStack(Material.SPLASH_POTION, 1);
+            PotionMeta meta = (PotionMeta) potion.getItemMeta();
+            meta.setBasePotionType(potionType);
+            potion.setItemMeta(meta);
+            return potion;
+        }
+    }

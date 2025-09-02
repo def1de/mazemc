@@ -5,6 +5,7 @@ import org.bukkit.block.Block;
 import org.bukkit.block.Chest;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.potion.PotionEffect;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitTask;
@@ -44,6 +45,8 @@ public class MazeManager {
 
     private boolean[][] mazeLayout;
     private MazeMapGenerator mapGenerator;
+
+    private List<Watcher> watchers = new ArrayList<>();
 
     public MazeManager(CommandSender sender) {
         if (!(sender instanceof Player)) {
@@ -94,11 +97,19 @@ public class MazeManager {
 
                     // Set game mode to adventure
                     player.setGameMode(GameMode.ADVENTURE);
-                    // Clear inventory
+                    // Reset player state
                     player.getInventory().clear();
-                    // Reset health and food
                     player.setHealth(player.getAttribute(org.bukkit.attribute.Attribute.MAX_HEALTH).getDefaultValue());
                     player.setFoodLevel(20);
+                    player.setSaturation(20f);
+                    player.setExhaustion(0f);
+                    player.setFireTicks(0);
+                    player.setExp(0);
+                    player.setLevel(0);
+                    player.setTotalExperience(0);
+                    for (PotionEffect effect : player.getActivePotionEffects()) {
+                        player.removePotionEffect(effect.getType());
+                    }
 
                     // Store players
                     playersInMaze.add(player);
@@ -148,6 +159,9 @@ public class MazeManager {
                 mapGenerator.giveMazeMapToPlayer(player);
             }
         }
+
+        watchers = Watcher.createWatchers(world, new ArrayList<>(playersInMaze), mazeLayout);
+        worldOwner.sendMessage("§6" + watchers.size() + " Guardian watchers have been deployed!");
     }
 
     private void createMaze() {
@@ -205,7 +219,7 @@ public class MazeManager {
         generateChestsInWorld(maze);
         createSpawnArea();
 
-        this.mapGenerator = new MazeMapGenerator(world, mazeLayout, width, height);
+        this.mapGenerator = new MazeMapGenerator(world, mazeLayout, width, height);;
     }
 
     private void generateMazeInWorld(boolean[][] maze) {

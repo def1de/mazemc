@@ -62,9 +62,33 @@ public final class Mazemc extends JavaPlugin {
             } else if(args.length == 1 && args[0].equalsIgnoreCase("start")) {
                 mazeManager.startGame();
                 return true;
+            } else if (command.getName().equalsIgnoreCase("hub")) {
+                if (sender instanceof org.bukkit.entity.Player) {
+                    org.bukkit.entity.Player player = (org.bukkit.entity.Player) sender;
+
+                    // Get the default world (usually "world")
+                    org.bukkit.World defaultWorld = Bukkit.getWorld("world");
+                    if (defaultWorld == null) {
+                        // Fallback to the first world if "world" doesn't exist
+                        defaultWorld = Bukkit.getWorlds().get(0);
+                    }
+
+                    // Teleport to spawn location of default world
+                    org.bukkit.Location spawnLocation = defaultWorld.getSpawnLocation();
+                    player.teleport(spawnLocation);
+                    player.sendMessage("§aWelcome back to the hub!");
+
+                    // Reset player state
+                    player.setGameMode(org.bukkit.GameMode.ADVENTURE);
+                    player.setWalkSpeed(0.2f);
+                    player.setFlySpeed(0.1f);
+                    player.setAllowFlight(false);
+
+                } else {
+                    sender.sendMessage("§cOnly players can use this command!");
+                }
+                return true;
             }
-            sender.sendMessage("§eUsage: /maze new");
-            return true;
         }
         return false;
     }
